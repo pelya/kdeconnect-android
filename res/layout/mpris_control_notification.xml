@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mpris_control_notification"
+    android:gravity="center"
+    android:paddingLeft="5dip"
+    android:paddingTop="5dip"
+    android:paddingRight="5dip"
+    android:paddingBottom="5dip">
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/mpris_open_dialog"
+        android:src="@drawable/icon"
+        android:contentDescription="@string/remote_control"
+        android:layout_weight="0.25"
+    />
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/prev_button"
+        android:src="@android:drawable/ic_media_previous"
+        android:contentDescription="@string/mpris_previous"
+        android:layout_weight="0.25"
+    />
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/play_button"
+        android:src="@android:drawable/ic_media_play"
+        android:contentDescription="@string/mpris_play"
+        android:layout_weight="0.25"
+    />
+
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/next_button"
+        android:src="@android:drawable/ic_media_next"
+        android:contentDescription="@string/mpris_next"
+        android:layout_weight="0.25"
+    />
+
+</LinearLayout>

@@ -31,7 +31,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="KDE Connect"
+        android:label="@string/app_title"
         android:theme="@style/KdeConnectTheme"
         >
 
@@ -131,7 +131,18 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.kde.kdeconnect.UserInterface.MaterialActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
         </activity>
+        <receiver
+            android:name="org.kde.kdeconnect.Plugins.MprisPlugin.MprisNotification">
+            <intent-filter>
+                <action android:name="@string/mpris_broadcast_previous" />
+                <action android:name="@string/mpris_broadcast_next" />
+                <action android:name="@string/mpris_broadcast_play" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name="org.kde.kdeconnect.Plugins.RunCommandPlugin.RunCommandActivity"
             android:label="@string/remote_control"

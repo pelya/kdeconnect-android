@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="app_title">KDE Connect</string>
     <string name="pref_plugin_telephony">Telephony notifier</string>
     <string name="pref_plugin_telephony_desc">Send notifications for SMS and calls</string>
     <string name="pref_plugin_battery">Battery report</string>
@@ -116,6 +117,11 @@
         <item>60000000</item>
         <item>120000000</item>
     </string-array>
+    <string name="mpris_notification_with_controls">Notification with media controls</string>
+    <string name="mpris_notification_with_controls_key" translatable="false">mpris_notification_with_controls_key</string>
+    <string name="mpris_broadcast_previous" translatable="false">org.kde.kdeconnect.Plugins.MprisPlugin.Previous</string>
+    <string name="mpris_broadcast_next" translatable="false">org.kde.kdeconnect.Plugins.MprisPlugin.Next</string>
+    <string name="mpris_broadcast_play" translatable="false">org.kde.kdeconnect.Plugins.MprisPlugin.Play</string>
     <string name="share_to">Share To...</string>
     <string name="protocol_version_older">This device uses an old protocol version</string>
     <string name="protocol_version_newer">This device uses a newer protocol version</string>

@@ -36,6 +36,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import org.kde.kdeconnect.Backends.BaseLink;
 import org.kde.kdeconnect.BackgroundService;
@@ -192,6 +194,7 @@ public class MprisActivity extends ActionBarActivity {
                     }
                 });
 
+                //mprisNotification.showNotification(service, prefs.getBoolean(getString(R.string.mpris_notification_with_controls_key)));
             }
         });
 
@@ -290,7 +293,7 @@ public class MprisActivity extends ActionBarActivity {
         getIntent().removeExtra("player");
         deviceId = getIntent().getStringExtra("deviceId");
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String interval_time_str = prefs.getString(getString(R.string.mpris_time_key),
                 getString(R.string.mpris_time_default));
         final int interval_time = Integer.parseInt(interval_time_str);
@@ -453,6 +456,16 @@ public class MprisActivity extends ActionBarActivity {
 
         });
 
+        MprisNotification.showNotification(this, prefs.getBoolean(getString(R.string.mpris_notification_with_controls_key), true), deviceId);
+        CheckBox ntfCheckbox = (CheckBox) findViewById(R.id.mpris_notification_with_controls);
+        ntfCheckbox.setChecked(prefs.getBoolean(getString(R.string.mpris_notification_with_controls_key), true));
+        ntfCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+             @Override
+             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                 prefs.edit().putBoolean(getString(R.string.mpris_notification_with_controls_key), isChecked).apply();
+                 MprisNotification.showNotification(MprisActivity.this, isChecked, deviceId);
+             }
+        });
     }
 
     @Override

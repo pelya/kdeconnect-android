@@ -165,6 +165,22 @@
 
     </LinearLayout>
 
+    <!-- This is just a spacer -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dip"
+        android:layout_gravity="center"
+    />
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mpris_notification_with_controls"
+        android:id="@+id/mpris_notification_with_controls"
+        android:padding="8dip"
+    />
+
     <!--
         <ImageButton
                 android:layout_width="wrap_content"
