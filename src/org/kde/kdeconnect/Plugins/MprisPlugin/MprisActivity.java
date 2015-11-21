@@ -114,6 +114,7 @@ public class MprisActivity extends ActionBarActivity {
                                 } else {
                                     ((ImageButton) findViewById(R.id.play_button)).setImageResource(android.R.drawable.ic_media_play);
                                 }
+                                MprisNotification.updateNotification(MprisActivity.this, mpris.getCurrentSong(), mpris.isPlaying());
                             }
                         });
                     }

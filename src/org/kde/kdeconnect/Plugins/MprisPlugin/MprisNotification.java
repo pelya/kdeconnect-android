@@ -46,74 +46,88 @@ import java.util.ArrayList;
 
 public class MprisNotification extends BroadcastReceiver {
 
-	public static final int NOTIFICATION_ID = 0x91b70463; // echo MprisNotification | md5sum | head -c 8
+    public static final int NOTIFICATION_ID = 0x91b70463; // echo MprisNotification | md5sum | head -c 8
+    private static Notification ntf = null;
 
-	public static void showNotification(Context context, final boolean show, final String deviceId) {
-		BackgroundService.RunCommand(context, new BackgroundService.InstanceCallback() {
-			@Override
-			public void onServiceStart(BackgroundService ctx) {
-				NotificationManager ntfMgr = (NotificationManager)ctx.getSystemService(Service.NOTIFICATION_SERVICE);
+    public static void showNotification(Context context, final boolean show, final String deviceId) {
+        BackgroundService.RunCommand(context, new BackgroundService.InstanceCallback() {
+            @Override
+            public void onServiceStart(BackgroundService ctx) {
+                if (show) {
 
-				if (show) {
+                    //ntf = new Notification(R.drawable.icon, ctx.getString(R.string.app_title), System.currentTimeMillis());
+                    ntf = new Notification();
+                    ntf.icon = R.drawable.icon;
+                    ntf.flags = Notification.FLAG_NO_CLEAR;
+                    ntf.sound = null;
+                    ntf.contentView = new RemoteViews(ctx.getPackageName(), R.layout.mpris_control_notification);
 
-					Notification ntf = new Notification(R.drawable.icon, ctx.getString(R.string.app_title), System.currentTimeMillis());
-					ntf.flags = Notification.FLAG_NO_CLEAR;
-					ntf.sound = null;
-					ntf.contentView = new RemoteViews(ctx.getPackageName(), R.layout.mpris_control_notification);
+                    ntf.contentView.setOnClickPendingIntent(R.id.mpris_open_dialog,
+                        PendingIntent.getActivity(ctx, 0,
+                        new Intent(Intent.ACTION_MAIN, null, ctx, MprisActivity.class).putExtra("deviceId", deviceId),
+                        PendingIntent.FLAG_CANCEL_CURRENT));
 
-					ntf.contentView.setOnClickPendingIntent(R.id.mpris_open_dialog,
-						PendingIntent.getActivity(ctx, 0,
-						new Intent(Intent.ACTION_MAIN, null, ctx, MprisActivity.class).putExtra("deviceId", deviceId),
-						PendingIntent.FLAG_CANCEL_CURRENT));
+                    ntf.contentView.setOnClickPendingIntent(R.id.prev_button,
+                        PendingIntent.getBroadcast(ctx, 0,
+                                new Intent(ctx.getString(R.string.mpris_broadcast_previous),
+                                        null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
 
-					ntf.contentView.setOnClickPendingIntent(R.id.prev_button,
-						PendingIntent.getBroadcast(ctx, 0,
-						new Intent(ctx.getString(R.string.mpris_broadcast_previous),
-						null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
+                    ntf.contentView.setOnClickPendingIntent(R.id.play_button,
+                        PendingIntent.getBroadcast(ctx, 0,
+                        new Intent(ctx.getString(R.string.mpris_broadcast_play),
+                        null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
 
-					ntf.contentView.setOnClickPendingIntent(R.id.play_button,
-						PendingIntent.getBroadcast(ctx, 0,
-						new Intent(ctx.getString(R.string.mpris_broadcast_play),
-						null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
+                    ntf.contentView.setOnClickPendingIntent(R.id.next_button,
+                        PendingIntent.getBroadcast(ctx, 0,
+                        new Intent(ctx.getString(R.string.mpris_broadcast_next),
+                        null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
 
-					ntf.contentView.setOnClickPendingIntent(R.id.next_button,
-						PendingIntent.getBroadcast(ctx, 0,
-						new Intent(ctx.getString(R.string.mpris_broadcast_next),
-						null, ctx, MprisNotification.class).putExtra("deviceId", deviceId), 0));
+                    ntf.contentView.setCharSequence(R.id.now_playing_textview, "setText", ctx.getString(R.string.app_title));
 
-					ctx.startForeground(NOTIFICATION_ID, ntf);
+                    ctx.startForeground(NOTIFICATION_ID, ntf);
 
-				} else {
+                } else {
 
-					ntfMgr.cancel(NOTIFICATION_ID);
+                    ntf = null;
+                    ctx.stopForeground(true);
 
-				}
-			}
-		});
-	}
+                }
+            }
+        });
+    }
 
-	@Override
-	public void onReceive(final Context ctx, final Intent intent) {
-		if (intent == null || intent.getAction() == null || intent.getStringExtra("deviceId") == null) {
-			return;
-		}
-		BackgroundService.RunCommand(ctx, new BackgroundService.InstanceCallback() {
-			@Override
-			public void onServiceStart(BackgroundService service) {
-				Device device = service.getDevice(intent.getStringExtra("deviceId"));
-				if (device == null) return;
-				MprisPlugin mpris = device.getPlugin(MprisPlugin.class);
-				if (mpris == null) return;
-				if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_previous))) {
-					mpris.sendAction("Previous");
-				}
-				if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_next))) {
-					mpris.sendAction("Next");
-				}
-				if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_play))) {
-					mpris.sendAction("PlayPause");
-				}
-			}
-		});
-	}
+    public static void updateNotification(Context context, final String text, boolean isPlaying) {
+        if (ntf == null) return;
+
+        ntf.contentView.setCharSequence(R.id.now_playing_textview, "setText", text);
+        ntf.contentView.setImageViewResource(R.id.play_button,
+                isPlaying ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+        NotificationManager ntfMgr = (NotificationManager)context.getSystemService(Service.NOTIFICATION_SERVICE);
+        ntfMgr.notify(NOTIFICATION_ID, ntf);
+    }
+
+    @Override
+    public void onReceive(final Context ctx, final Intent intent) {
+        if (intent == null || intent.getAction() == null || intent.getStringExtra("deviceId") == null) {
+            return;
+        }
+        BackgroundService.RunCommand(ctx, new BackgroundService.InstanceCallback() {
+            @Override
+            public void onServiceStart(BackgroundService service) {
+                Device device = service.getDevice(intent.getStringExtra("deviceId"));
+                if (device == null) return;
+                MprisPlugin mpris = device.getPlugin(MprisPlugin.class);
+                if (mpris == null) return;
+                if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_previous))) {
+                    mpris.sendAction("Previous");
+                }
+                if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_next))) {
+                    mpris.sendAction("Next");
+                }
+                if (intent.getAction().equals(service.getString(R.string.mpris_broadcast_play))) {
+                    mpris.sendAction("PlayPause");
+                }
+            }
+        });
+    }
 }
